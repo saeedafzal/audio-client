@@ -3,10 +3,40 @@ import locale
 import os
 import mpv
 import qdarktheme
+import yt_dlp
 
 from pathlib import Path
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
+
+
+class Signals(QObject):
+    finished = pyqtSignal()
+
+
+class Worker(QRunnable):
+
+    def __init__(self, url, path):
+        super().__init__()
+        self.url = url
+        self.path = path
+        self.signals = Signals()
+
+    @pyqtSlot()
+    def run(self):
+        print("Starting download...")
+
+        ydl_opts = {
+            "extract_audio": True,
+            "format": "bestaudio",
+            "outtmpl": f"{self.path}/%(title)s.%(ext)s"
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([self.url])
+
+        print("Download complete.")
+        self.signals.finished.emit()
 
 
 class Seeker(QSlider):
@@ -36,6 +66,9 @@ class Dashboard(QWidget):
         super().__init__()
 
         self.player = player
+        self.isDownloading = False
+        self.downloaderPool = QThreadPool()
+        print("Multithreading with maximum %d threads" % self.downloaderPool.maxThreadCount())
 
         # -- Top bar
         self.directoryLabel = QLabel("Media directory:")
@@ -46,15 +79,23 @@ class Dashboard(QWidget):
         changeDirectoryBtn = QPushButton("Set Media Directory")
         changeDirectoryBtn.clicked.connect(self.setMediaDirectory)
 
+        addDownloadLinkBtn = QPushButton("Add Download Link")
+        addDownloadLinkBtn.clicked.connect(self.addDownloadLink)
+
         topBarLayout = QHBoxLayout()
         topBarLayout.addWidget(self.directoryLabel)
         topBarLayout.addStretch()
         topBarLayout.addWidget(loadMusicDirectoryBtn)
         topBarLayout.addWidget(changeDirectoryBtn)
+        topBarLayout.addWidget(addDownloadLinkBtn)
         # -- Top bar
 
         # -- Playlist
         self.playlist = QListWidget()
+        self.downloadList = QListWidget()
+
+        self.listLayout = QHBoxLayout()
+        self.listLayout.addWidget(self.playlist)
         # -- Playlist
 
         # -- Controls
@@ -84,7 +125,7 @@ class Dashboard(QWidget):
         # -- Layout
         layout = QVBoxLayout()
         layout.addLayout(topBarLayout)
-        layout.addWidget(self.playlist)
+        layout.addLayout(self.listLayout)
         layout.addLayout(conLayout)
         layout.addWidget(self.seekSlider)
         # -- Layout
@@ -153,6 +194,39 @@ class Dashboard(QWidget):
                 index = 0
             self.playlist.setCurrentRow(index)
             self.playAudio()
+
+    def addDownloadLink(self):
+        if not hasattr(self, "path"):
+            return
+
+        url, ok = QInputDialog.getText(self, "Add Download Link", "Enter valid media url:")
+        if ok and url:
+            # TODO: Validate URL
+            print(f"Adding {url} to download list.")
+            self.listLayout.addWidget(self.downloadList)
+            self.downloadList.addItem(f"Queued: {url}")
+            if not self.isDownloading:
+                self.download(url)
+
+    def download(self, url):
+        self.isDownloading = True
+        text = self.downloadList.item(0).text().replace("Queued", "Downloading")
+        self.downloadList.item(0).setText(text)
+
+        print(f"Downloading {url}")
+
+        worker = Worker(url, self.path)
+        worker.signals.finished.connect(self.downloadComplete)
+
+        self.downloaderPool.start(worker)
+
+    def downloadComplete(self):
+        print("Thread ended, because download is completed.")
+        self.downloadList.takeItem(0)
+        if self.downloadList.count() > 0:
+            url = self.downloadList.item(0).text().split(":", 1)[1].strip()
+            print("Next link to download...")
+            self.download(url)
 
 
 class Window(QMainWindow):
