@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <title>Audio Client</title>
+
+        <link rel="stylesheet" href="/style.css" />
+    </head>
+    <body>
+        <nav>
+            <h3>Audio Client</h3>
+            <div>
+                <button disabled>Load from Directory</button>
+                <button onclick="loadFromMusic()">Load from Music</button>
+            </div>
+        </nav>
+        <main>
+            <aside>
+                <ul>
+                    <li th:each="playlist : ${playlists}" th:text="playlist" />
+                </ul>
+                <button disabled>+ New Playlist</button>
+            </aside>
+            <ul id="playlist"></ul>
+        </main>
+        <footer>
+            <h3 id="title-header">-</h3>
+            <audio id="audio" controls></audio>
+        </footer>
+
+        <script src="/script.js"></script>
+    </body>
+</html>
