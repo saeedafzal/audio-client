@@ -27,6 +27,24 @@ function loadFromMusic() {
         });
 }
 
+function playNext() {
+    const children = [...playlist.children];
+
+    let index = children.findIndex(li => li.classList.contains("active"));
+    index++;
+    if (index === children.length) {
+        index = 0;
+    }
+
+    children.forEach(child => child.classList.remove("active"));
+    children[index].classList.add("active");
+
+    const path = encodeURIComponent(paths[index]);
+    audio.src = `${location.href}api/directory/file?path=${path}`;
+    titleHeader.innerText = paths[index].split("/").pop();
+    audio.play();
+}
+
 function _loadAudioFile(li, name) {
     const children = [...li.parentNode.children];
     children.forEach(child => child.classList.remove("active"));
@@ -36,4 +54,5 @@ function _loadAudioFile(li, name) {
     const path = encodeURIComponent(paths[index]);
     audio.src = `${location.href}api/directory/file?path=${path}`;
     titleHeader.innerText = name;
+    audio.play();
 }
