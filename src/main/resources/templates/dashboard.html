@@ -16,19 +16,32 @@
                 <button onclick="loadFromMusic()">Load from Music</button>
             </div>
         </nav>
+
         <main>
             <aside>
                 <ul>
                     <li th:each="playlist : ${playlists}" th:text="playlist" />
                 </ul>
-                <button disabled>+ New Playlist</button>
+                <button disabled>+ RSS Feed</button>
             </aside>
             <ul id="playlist"></ul>
         </main>
+
         <footer>
             <h3 id="title-header">-</h3>
             <audio id="audio" controls onended="playNext()"></audio>
         </footer>
+
+        <dialog id="dialog">
+            <form>
+                <h3>Enter rss feed url</h3>
+                <input required type="url" name="rss-feed-url" />
+                <div>
+                    <button>Cancel</button>
+                    <button>Add Feed</button>
+                </div>
+            </form>
+        </dialog>
 
         <script src="/script.js"></script>
     </body>

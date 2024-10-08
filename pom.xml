@@ -16,7 +16,7 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
-        <java.version>23</java.version>
+        <java.version>22</java.version>
     </properties>
 
     <dependencies>
@@ -51,4 +51,15 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <finalName>audio-client</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

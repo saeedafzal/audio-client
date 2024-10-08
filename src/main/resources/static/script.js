@@ -5,6 +5,8 @@ function id(id) {
 const playlist = id("playlist");
 const audio = id("audio");
 const titleHeader = id("title-header");
+const dialog = id("dialog");
+dialog.showModal();
 
 let paths = [];
 
