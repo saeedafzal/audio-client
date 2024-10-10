@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" theme="dark" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,8 +10,15 @@
     </head>
     <body>
         <nav>
-            <h3>Audio Client</h3>
-            <div>
+            <div class="left-menu">
+                <h3>Audio Client</h3>
+                <div class="status-container">
+                    <div class="status" id="status-indicator"></div>
+                    <span id="status-label">Checking for yt-dlp...</span>
+                </div>
+            </div>
+            <div class="btn-menu">
+                <button disabled id="add-media-btn" onclick="toggleMediaDialog()">+ Add Media</button>
                 <button disabled>Load from Directory</button>
                 <button onclick="loadFromMusic()">Load from Music</button>
             </div>
@@ -22,9 +29,12 @@
                 <ul>
                     <li th:each="playlist : ${playlists}" th:text="playlist" />
                 </ul>
-                <button disabled>+ RSS Feed</button>
+                <button onclick="toggleRssDialog()">+ RSS Feed</button>
             </aside>
-            <ul id="playlist"></ul>
+            <div>
+                <h3 style="padding: 1rem;" id="playlist-label"></h3>
+                <ul id="playlist"></ul>
+            </div>
         </main>
 
         <footer>
@@ -32,17 +42,29 @@
             <audio id="audio" controls onended="playNext()"></audio>
         </footer>
 
-        <dialog id="dialog">
-            <form>
+        <dialog id="rss-dialog">
+            <form id="rss-form">
                 <h3>Enter rss feed url</h3>
                 <input required type="url" name="rss-feed-url" />
                 <div>
-                    <button>Cancel</button>
+                    <button type="button" onclick="toggleRssDialog()">Cancel</button>
                     <button>Add Feed</button>
                 </div>
             </form>
         </dialog>
 
-        <script src="/script.js"></script>
+        <dialog id="media-dialog">
+            <form>
+                <h3>Enter Media URL</h3>
+                <input required type="url" name="media-url" />
+                <div>
+                    <button type="button" onclick="toggleMediaDialog()">Cancel</button>
+                    <button>Add Feed</button>
+                </div>
+            </form>
+        </dialog>
+
+        <script src="/scripts/script.js"></script>
+        <script src="/scripts/add_media.js"></script>
     </body>
 </html>

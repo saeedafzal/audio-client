@@ -1,24 +1,33 @@
-function id(id) {
-    return document.getElementById(id);
-}
+// Helpers
+const id = id => document.getElementById(id);
 
+// Elements
 const playlist = id("playlist");
 const audio = id("audio");
 const titleHeader = id("title-header");
 const dialog = id("dialog");
-dialog.showModal();
+const rssForm = id("rss-form");
+const statusIndicator = id("status-indicator");
+const statusLabel = id("status-label");
+const addMediaBtn = id("add-media-btn");
+const playlistLabel = id("playlist-label");
 
+// Vars
 let paths = [];
+let ytDlpFound = false;
 
+// Event handlers
 function loadFromMusic() {
     fetch("api/directory/music")
         .then(res => {
             if (res.ok) {
                 return res.json();
             }
-        }).then(res => {
+        })
+        .then(res => {
             console.log(res);
             paths = res;
+            playlistLabel.innerText = "Music";
             paths.forEach(path => {
                 const name = path.split("/").pop();
                 const li = document.createElement("li");
@@ -47,6 +56,15 @@ function playNext() {
     audio.play();
 }
 
+function toggleRssDialog() {
+    dialog.open ? dialog.close() : dialog.showModal();
+}
+
+function submitDownloadForm(e) {
+    e.preventDefault();
+}
+
+// Privates
 function _loadAudioFile(li, name) {
     const children = [...li.parentNode.children];
     children.forEach(child => child.classList.remove("active"));
@@ -58,3 +76,36 @@ function _loadAudioFile(li, name) {
     titleHeader.innerText = name;
     audio.play();
 }
+
+function _checkForYtDlp() {
+    ytDlpFound = false;
+    addMediaBtn.disabled = true;
+
+    fetch("api/download/yt-dlp")
+        .then(res => {
+            if (res.ok) {
+                return res.text();
+            }
+            throw Error();
+        })
+        .then(res => {
+            console.debug(res);
+            if (res === "true") {
+                statusIndicator.classList.remove("bad");
+                statusIndicator.classList.add("ok");
+                statusLabel.innerText = "yt-dlp found.";
+                ytDlpFound = true;
+                addMediaBtn.disabled = false;
+            } else {
+                statusIndicator.classList.remove("ok");
+                statusIndicator.classList.add("bad");
+                statusLabel.innerHTML = "No <code>yt-dlp</code> in PATH.";
+            }
+        });
+}
+
+// Entry
+document.addEventListener("DOMContentLoaded", () => {
+    _checkForYtDlp();
+    rssForm.onsubmit = submitDownloadForm;
+});

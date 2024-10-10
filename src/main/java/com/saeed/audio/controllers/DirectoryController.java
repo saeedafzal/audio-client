@@ -19,18 +19,18 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/directory")
 @RequiredArgsConstructor
 @Slf4j
 public class DirectoryController {
 
-    private static final Map<String, MediaType> MEDIA_TYPE_MAP = Map.of(
+    private static final Map<String, MediaType> SUPPORTED_MEDIA = Map.of(
         "mp3", MediaType.parseMediaType("audio/mpeg")
     );
 
     private final DirectoryService directoryService;
 
-    @GetMapping("/directory/music")
+    @GetMapping("/music")
     public List<String> getFilesFromMusicDirectory() {
         log.info("Getting audio from ~/Music directory...");
         List<String> files = directoryService.getFilesFromMusicDirectory();
@@ -38,7 +38,7 @@ public class DirectoryController {
         return files;
     }
 
-    @GetMapping("/directory/file")
+    @GetMapping("/file")
     public ResponseEntity<Resource> getFile(@RequestParam String path) {
         log.info("Getting file from path: {}", path);
         Resource resource = new FileSystemResource(Paths.get(path).normalize());
@@ -49,7 +49,7 @@ public class DirectoryController {
 
     private MediaType getMediaTypeFromExt(String path) {
         return Optional
-            .ofNullable(MEDIA_TYPE_MAP.get(StringUtils.getFilenameExtension(path)))
+            .ofNullable(SUPPORTED_MEDIA.get(StringUtils.getFilenameExtension(path)))
             .orElse(MediaType.APPLICATION_OCTET_STREAM);
     }
 }

@@ -23,13 +23,19 @@ public class DirectoryService {
 
     public List<String> getFilesFromMusicDirectory() {
         final String directory = System.getProperty("user.home") + File.separator + "Music";
-        try (Stream<Path> paths = Files.walk(Path.of(directory))) {
+        final Path path = Path.of(directory);
+
+        if (!path.toFile().exists()) {
+            return emptyList();
+        }
+
+        try (Stream<Path> paths = Files.walk(path)) {
             return paths
-                    .filter(Files::isRegularFile)
-                    .filter(this::isSupportedExtension)
-                    .map(Path::toFile)
-                    .map(File::getAbsolutePath)
-                    .toList();
+                .filter(Files::isRegularFile)
+                .filter(this::isSupportedExtension)
+                .map(Path::toFile)
+                .map(File::getAbsolutePath)
+                .toList();
         } catch (IOException e) {
             log.error("Error walking music directory: dir={} msg={}", directory, e.getMessage(), e);
             return emptyList();
