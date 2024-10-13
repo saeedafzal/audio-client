@@ -1,0 +1,31 @@
+{
+  "name": "web",
+  "version": "0.0.1",
+  "description": "The web client the audio client.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vite dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saeedafzal/audio-client.git"
+  },
+  "author": "Saeed Afzal",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/saeedafzal/audio-client/issues"
+  },
+  "homepage": "https://github.com/saeedafzal/audio-client#readme",
+  "dependencies": {
+    "mithril": "^2.2.8"
+  },
+  "devDependencies": {
+    "@types/mithril": "^2.2.7",
+    "@types/node": "^22.7.5",
+    "less": "^4.2.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.8"
+  }
+}
