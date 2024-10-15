@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "audio-client-web",
   "version": "0.0.1",
   "description": "The web client the audio client.",
   "private": true,
@@ -25,7 +25,6 @@
     "@types/mithril": "^2.2.7",
     "@types/node": "^22.7.5",
     "less": "^4.2.0",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.8"
+    "vite": "^5.4.9"
   }
 }

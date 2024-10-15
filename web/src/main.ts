@@ -1,15 +1,16 @@
-import m from "mithril";
-import DashboardView from "./views/dashboard_view";
-import "@/styles/main.less";
+import "./styles/main.less";
 
-// Print application data
+import m from "mithril";
+import DashboardView from "./views/dashboardview";
+
+// TODO: Application version from package.json
 const environment = import.meta.env.MODE;
 console.log(`Audio Client | ${environment} | ${import.meta.env.VITE_VERSION}`);
 
-// Disable debug logs
-if ("production" === environment) {
+// No debug logs in production
+if (environment === "production") {
     console.debug = () => undefined;
 }
 
-// Entrypoint
+// Entry point
 m.mount(document.body, DashboardView);

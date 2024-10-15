@@ -1,59 +1,36 @@
-.root {
+.dashboard {
     position: fixed;
     height: 100%;
     width: 100%;
+    background: var(--background);
+    color: aliceblue;
     display: flex;
     flex-direction: column;
 }
 
-main {
+nav {
+    padding: 0.75rem 1rem;
     display: flex;
-    flex: 1;
+    justify-content: space-between;
 }
 
-// TODO: Move to sidebar.less
-aside {
-    padding-top: 5rem;
-    width: 250px;
-    flex-shrink: 0;
+main {
+    flex: 1;
+    padding: 1rem 5rem;
+}
+
+footer {
+    background: var(--background-secondary);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
 
     h3 {
-        font-weight: bold;
-        padding-left: 1rem;
-        user-select: none;
-        padding: 0.75rem 1.5rem;
-
-        &:hover {
-            cursor: pointer;
-            color: var(--accent);
-        }
-
-        &.active {
-            color: var(--accent);
-            border-left: 5px solid var(--accent);
-            // background: linear-gradient(to right, var(--accent) 0%, rgba(255, 165, 0, 0) 30%);
-        }
+        width: 250px;
     }
 }
 
-// TODO: Move to playlist.less
-.playlist {
-    padding: 1.5rem 0;
+audio {
     width: 100%;
-    margin-right: 5rem;
-
-    div {
-        padding: 1.5rem 1.25rem;
-        font-weight: bold;
-        border-radius: 1rem;
-
-        &:hover {
-            background: var(--background-secondary);
-            cursor: pointer;
-        }
-
-        &.active {
-            background: var(--background-secondary);
-        }
-    }
 }

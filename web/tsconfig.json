@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
     /* Language and Environment */
-    "target": "ES2020",
-    // "lib": [],
+    "target": "es2022",
     "useDefineForClassFields": true,
     "moduleDetection": "force",
 
     /* Modules */
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "baseUrl": "./",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
@@ -32,6 +31,5 @@
 
     /* Completeness */
     "skipLibCheck": true
-  },
-  "include": ["vite.config.ts", "src"]
+  }
 }
