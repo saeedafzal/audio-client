@@ -1,9 +1,12 @@
 import "./styles/main.less";
 
 import m from "mithril";
+import Container from "./core/container";
+import EventBus from "./core/eventbus";
 import DashboardView from "./views/dashboardview";
+import DashboardModel from "./views/dashboardmodel";
 
-// TODO: Application version from package.json
+// Log version
 const environment = import.meta.env.MODE;
 console.log(`Audio Client | ${environment} | ${import.meta.env.VITE_VERSION}`);
 
@@ -12,5 +15,15 @@ if (environment === "production") {
     console.debug = () => undefined;
 }
 
+// Create and register objects
+const eventbus = new EventBus();
+Container.register(eventbus, EventBus);
+
 // Entry point
-m.mount(document.body, DashboardView);
+const dashboardModel = new DashboardModel();
+const Root = {
+    view() {
+        return m(DashboardView, { model: dashboardModel });
+    }
+};
+m.mount(document.body, Root);

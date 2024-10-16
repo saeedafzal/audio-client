@@ -1,25 +1,22 @@
-.item {
+li {
     display: flex;
     cursor: pointer;
     align-items: center;
+    flex: 1;
+    padding: 1rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
 
-    & .head {
-        flex: 1;
-        padding: 1rem;
-        border-radius: 1rem;
-        display: flex;
-        align-items: center;
-
-        & > * {
-            width: 50%;
-        }
-
-        &:hover {
-            background: var(--background-secondary);
-        }
+    & > * {
+        width: 50%;
     }
 
-    &.active .head {
+    &:hover {
+        background: var(--background-secondary);
+    }
+
+    &.active {
         background: var(--background-secondary);
     }
 }

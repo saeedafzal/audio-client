@@ -4,7 +4,7 @@ interface DefaultAttributes<M> extends Attributes {
     model?: M;
 }
 
-export default abstract class AbstractComponent<M = {}, A extends DefaultAttributes<M> = {}> implements ClassComponent<A> {
+export default abstract class AbstractComponent<M = {}, A extends DefaultAttributes<M> = DefaultAttributes<M>> implements ClassComponent<A> {
 
     private _model?: M;
 

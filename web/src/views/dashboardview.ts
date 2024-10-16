@@ -1,23 +1,21 @@
 import m from "mithril";
 import AbstractComponent from "@/core/abstractcomponent";
+import DashboardModel from "@/views/dashboardmodel";
 import Item from "@/components/item";
 
-export default class DashboardView extends AbstractComponent {
+export default class DashboardView extends AbstractComponent<DashboardModel> {
 
     override view() {
         return m(".dashboard", [
-            // Top bar
             m("nav", [
                 m("h3", "Audio Client"),
-                m("button.primary", "Load Music Directory")
+                m("button.primary", {
+                    onclick: () => this.model.loadMusicDirectory()
+                }, "Load Music Directory")
             ]),
-            m("main", [
-                m(Item, { title: "Title", duration: "duration" }),
-                m(Item, { title: "Title", duration: "duration" }),
-                m(Item, { title: "Title", duration: "duration" }),
-                m(Item, { title: "Title", duration: "duration" }),
-                m(Item, { title: "Title", duration: "duration" })
-            ]),
+            m("ul", [ this.model.items.map(item => {
+                return m(Item, item));
+            }]),
             m("footer", [
                 m("h3", "-"),
                 m("audio[controls]")
