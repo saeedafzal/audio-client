@@ -20,7 +20,7 @@ const eventbus = new EventBus();
 Container.register(eventbus, EventBus);
 
 // Entry point
-const dashboardModel = new DashboardModel();
+const dashboardModel = new DashboardModel(eventbus);
 const Root = {
     view() {
         return m(DashboardView, { model: dashboardModel });

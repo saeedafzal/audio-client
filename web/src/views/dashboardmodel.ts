@@ -3,6 +3,12 @@ import AbstractModel from "@/core/abstractmodel";
 export default class DashboardModel extends AbstractModel {
 
     items: PlaylistItem[] = [];
+    loadedAudioName = "-";
+    loadedAudioSrc = "#";
+
+    override init() {
+        this.eventbus.subscribe("audio.load", this._audioLoadCallback, this);
+    }
 
     loadMusicDirectory(): void {
         console.debug("Loading music directory.");
@@ -28,5 +34,10 @@ export default class DashboardModel extends AbstractModel {
 
     private _getFilename(path: string): string {
         return path.split("/").pop()!;
+    }
+
+    private _audioLoadCallback(path: string, filename: string): void {
+        this.loadedAudioSrc = `/api/directory/file?path=${path}`;
+        this.loadedAudioName = filename;
     }
 }

@@ -1,10 +1,11 @@
 import { Attributes, Children, ClassComponent, Vnode } from "mithril";
+import AbstractModel from "./abstractmodel";
 
-interface DefaultAttributes<M> extends Attributes {
+export interface DefaultAttributes<M> extends Attributes {
     model?: M;
 }
 
-export default abstract class AbstractComponent<M = {}, A extends DefaultAttributes<M> = DefaultAttributes<M>> implements ClassComponent<A> {
+export default abstract class AbstractComponent<M extends AbstractModel = AbstractModel, A extends DefaultAttributes<M> = DefaultAttributes<M>> implements ClassComponent<A> {
 
     private _model?: M;
 
@@ -12,10 +13,24 @@ export default abstract class AbstractComponent<M = {}, A extends DefaultAttribu
         this._model = attrs?.model;
     }
 
+    /**
+     * @override
+     */
+    oncreate(_?: Vnode<A>) {
+        this.model?.init();
+    }
+
     /*
      * @override
      */
     abstract view(vnode?: Vnode<A>): Children;
+
+    /**
+     * @override
+     */
+    onremove(): void {
+        this.model?.teardown();
+    }
 
     /**
      * Get the model if supplied.

@@ -23,4 +23,13 @@ export default class EventBus {
 
         console.debug(`[EventBus] Published event: event=${event} subscribers=${this._subscriptions[event].length}`);
     }
+
+    unsubscribe(context: unknown): void {
+        const updated = Object.fromEntries(
+            Object.entries(this._subscriptions)
+                .map(([k, v]) => [k, v.filter(sub => sub.context !== context)])
+                .filter(([, v]) => v.length > 0)
+        );
+        Object.assign(this._subscriptions, updated);
+    }
 }
