@@ -10,26 +10,26 @@ export default class DashboardModel extends AbstractModel {
         this.eventbus.subscribe("audio.load", this._audioLoadCallback, this);
     }
 
-    loadMusicDirectory(): void {
+    async loadMusicDirectory(): Promise<void> {
         console.debug("Loading music directory.");
-        fetch("/api/directory/music")
-            .then(res => {
-                if (res.ok) {
-                    return res.json();
-                }
+
+        try {
+            const res = await fetch("/api/directory/music");
+            console.debug(res.ok);
+            if (!res.ok) {
                 throw Error("Could not load music directory.");
-            })
-            .then((res: string[]) => {
-                this.redraw(() => {
-                    console.debug(res);
-                    this.items = res.map(path => {
-                        return { path, title: this._getFilename(path), duration: "-" };
-                    });
+            }
+
+            const json: string[] = await res.json();
+            console.debug(json);
+            this.redraw(async () => {
+                this.items = await json.map(path => {
+                    return { path, title: this._getFilename(path), duration: "-" };
                 });
-            })
-            .catch(e => {
-                console.error(e.message);
             });
+        } catch (e: unknown) {
+            console.error(`Error getting music directory: ${e}`);
+        }
     }
 
     private _getFilename(path: string): string {
@@ -37,7 +37,7 @@ export default class DashboardModel extends AbstractModel {
     }
 
     private _audioLoadCallback(path: string, filename: string): void {
-        this.loadedAudioSrc = `/api/directory/file?path=${path}`;
         this.loadedAudioName = filename;
+        this.loadedAudioSrc = `/api/directory/file?path=${path}`;
     }
 }

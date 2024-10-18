@@ -3,7 +3,7 @@ type Subscription = { callback: Callback, context: unknown };
 
 export default class EventBus {
 
-    private readonly _subscriptions: Record<string, Subscription[]> = {};
+    private _subscriptions: Record<string, Subscription[]> = {};
 
     subscribe(event: string, callback: Callback, context: unknown): void {
         this._subscriptions[event] = this._subscriptions[event] || [];
@@ -27,9 +27,9 @@ export default class EventBus {
     unsubscribe(context: unknown): void {
         const updated = Object.fromEntries(
             Object.entries(this._subscriptions)
-                .map(([k, v]) => [k, v.filter(sub => sub.context !== context)])
+                .map(([k, v]) => [k, v.filter(sub => sub.context != context)])
                 .filter(([, v]) => v.length > 0)
         );
-        Object.assign(this._subscriptions, updated);
+        this._subscriptions = updated;
     }
 }
