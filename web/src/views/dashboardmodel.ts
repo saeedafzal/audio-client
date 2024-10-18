@@ -20,8 +20,8 @@ export default class DashboardModel extends AbstractModel {
                 throw Error("Could not load music directory.");
             })
             .then((res: string[]) => {
+                console.debug(res);
                 this.redraw(() => {
-                    console.debug(res);
                     this.items = res.map(path => {
                         return { path, title: this._getFilename(path), duration: "-" };
                     });
@@ -37,7 +37,7 @@ export default class DashboardModel extends AbstractModel {
     }
 
     private _audioLoadCallback(path: string, filename: string): void {
-        this.loadedAudioSrc = `/api/directory/file?path=${path}`;
         this.loadedAudioName = filename;
+        this.loadedAudioSrc = `/api/directory/file?path=${path}`;
     }
 }

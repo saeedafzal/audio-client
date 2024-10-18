@@ -7,6 +7,8 @@
   "scripts": {
     "preview": "vite preview",
     "start": "vite dev",
+    "test": "vitest run tests --disableConsoleIntercept=true",
+    "test:watch": "vitest tests",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
@@ -28,6 +30,8 @@
     "@types/mithril": "^2.2.7",
     "@types/node": "^22.7.5",
     "less": "^4.2.0",
-    "vite": "^5.4.9"
+    "msw": "^2.4.11",
+    "vite": "^5.4.9",
+    "vitest": "^2.1.3"
   }
 }

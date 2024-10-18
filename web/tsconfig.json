@@ -32,5 +32,10 @@
     /* Completeness */
     "skipLibCheck": true
   },
-  "include": ["src"]
+  "include": [
+      "vite.config.ts",
+      "src",
+      "tests",
+      "e2e"
+  ]
 }
