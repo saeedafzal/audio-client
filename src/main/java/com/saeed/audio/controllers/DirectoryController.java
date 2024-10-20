@@ -1,5 +1,6 @@
 package com.saeed.audio.controllers;
 
+import com.saeed.audio.model.DirectoryResponse;
 import com.saeed.audio.service.DirectoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.springframework.util.StringUtils.getFilenameExtension;
+
 @RestController
 @RequestMapping("/api/directory")
 @RequiredArgsConstructor
@@ -31,11 +34,11 @@ public class DirectoryController {
     private final DirectoryService directoryService;
 
     @GetMapping("/music")
-    public List<String> getFilesFromMusicDirectory() {
+    public DirectoryResponse getFilesFromMusicDirectory() {
         log.info("Getting audio from ~/Music directory...");
-        List<String> files = directoryService.getFilesFromMusicDirectory();
-        log.info("Returning files from music directory: count={}", files.size());
-        return files;
+        DirectoryResponse response = directoryService.getFilesFromMusicDirectory();
+        log.info("Returning files from music directory: count={}", response.audioPaths().size());
+        return response;
     }
 
     @GetMapping("/file")
@@ -49,7 +52,7 @@ public class DirectoryController {
 
     private MediaType getMediaTypeFromExt(String path) {
         return Optional
-            .ofNullable(SUPPORTED_MEDIA.get(StringUtils.getFilenameExtension(path)))
+            .ofNullable(SUPPORTED_MEDIA.get(getFilenameExtension(path)))
             .orElse(MediaType.APPLICATION_OCTET_STREAM);
     }
 }

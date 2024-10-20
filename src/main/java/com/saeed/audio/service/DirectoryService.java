@@ -1,5 +1,6 @@
 package com.saeed.audio.service;
 
+import com.saeed.audio.model.DirectoryResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -21,24 +22,25 @@ public class DirectoryService {
 
     private static final Set<String> SUPPORTED_EXT = Set.of("mp3", "wav", "ogg");
 
-    public List<String> getFilesFromMusicDirectory() {
+    public DirectoryResponse getFilesFromMusicDirectory() {
         final String directory = System.getProperty("user.home") + File.separator + "Music";
         final Path path = Path.of(directory);
 
         if (!path.toFile().exists()) {
-            return emptyList();
+            return null;
         }
 
         try (Stream<Path> paths = Files.walk(path)) {
-            return paths
+            List<String> audioPaths = paths
                 .filter(Files::isRegularFile)
                 .filter(this::isSupportedExtension)
                 .map(Path::toFile)
                 .map(File::getAbsolutePath)
                 .toList();
+            return new DirectoryResponse(directory, audioPaths);
         } catch (IOException e) {
             log.error("Error walking music directory: dir={} msg={}", directory, e.getMessage(), e);
-            return emptyList();
+            return null;
         }
     }
 

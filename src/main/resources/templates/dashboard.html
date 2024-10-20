@@ -32,9 +32,14 @@
                 <button onclick="toggleRssDialog()">+ RSS Feed</button>
             </aside>
             <div>
-                <h3 style="padding: 1rem;" id="playlist-label"></h3>
-                <ul id="playlist"></ul>
+                <h3 style="padding: 1rem;" id="playlist-label">Music</h3>
+                <ul id="playlist"><span style="padding: 1rem;">Please load a directory.</span></ul>
             </div>
+            <aside>
+                <h3 style="padding: 1rem; text-align: center">Download Queue</h3>
+                <ul id="download-queue"></ul>
+                <button onclick="hideDownloadList()">Hide List</button>
+            </aside>
         </main>
 
         <footer>
@@ -45,7 +50,9 @@
         <dialog id="rss-dialog">
             <form id="rss-form">
                 <h3>Enter rss feed url</h3>
-                <input required type="url" name="rss-feed-url" />
+                <label>
+                    <input required type="url" name="rss-feed-url" />
+                </label>
                 <div>
                     <button type="button" onclick="toggleRssDialog()">Cancel</button>
                     <button>Add Feed</button>
@@ -54,7 +61,7 @@
         </dialog>
 
         <dialog id="media-dialog">
-            <form>
+            <form id="media-dialog-form">
                 <h3>Enter Media URL</h3>
                 <input required type="url" name="media-url" />
                 <div>

@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+
 @RestController
 @RequestMapping("/api/download")
 @RequiredArgsConstructor
@@ -15,15 +17,17 @@ public class DownloadController {
 
     @GetMapping("/yt-dlp")
     public boolean hasYtDlp() {
-        log.info("Checking if yt-dlp exists in path or in cache.");
+        log.info("Checking if yt-dlp exists in PATH.");
         boolean result = downloadService.hasYtDlp();
         log.info("yt-dlp exists: {}", result);
         return result;
     }
 
     @PostMapping
-    public void startDownload(@RequestParam String url) {
-        log.info("Attempting to download audio from url {}.", url);
-        // TODO: Implement
+    public boolean startDownload(@RequestParam(required = false) String out, @RequestParam String url) {
+        log.info("Attempting to download audio: out={} url={}", out, url);
+        boolean result = downloadService.downloadAudio(out, url);
+        log.info("Download success: {}", result);
+        return result;
     }
 }
