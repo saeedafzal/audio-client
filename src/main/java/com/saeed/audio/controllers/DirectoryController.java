@@ -8,14 +8,12 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,8 +32,8 @@ public class DirectoryController {
     private final DirectoryService directoryService;
 
     @GetMapping("/music")
-    public DirectoryResponse getFilesFromMusicDirectory() {
-        log.info("Getting audio from ~/Music directory...");
+    public DirectoryResponse loadMusicDirectory() {
+        log.info("Getting audio from $HOME/Music directory...");
         DirectoryResponse response = directoryService.getFilesFromMusicDirectory();
         log.info("Returning files from music directory: count={}", response.audioPaths().size());
         return response;

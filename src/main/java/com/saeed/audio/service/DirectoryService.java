@@ -39,8 +39,8 @@ public class DirectoryService {
                 .toList();
             return new DirectoryResponse(directory, audioPaths);
         } catch (IOException e) {
-            log.error("Error walking music directory: dir={} msg={}", directory, e.getMessage(), e);
-            return null;
+            log.error("Error walking music directory: dir={} msg={}", directory, e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
