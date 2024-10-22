@@ -11,6 +11,7 @@ const downloadModal = new bootstrap.Modal("#download-modal");
 let directory;
 let loadedAudio = "";
 let activeElement;
+let index = 0;
 let audioFeed = [];
 
 const views = {
@@ -31,11 +32,17 @@ async function loadMusicDirectory() {
     playlist.innerHTML = "";
     audioFeed = [];
 
-    directoryResponse.audioPaths.forEach(path => {
+    let i = 0;
+
+    for (let i = 0; i < directoryResponse.audioPaths.length; i++) {
+        const path = directoryResponse.audioPaths[i];
         const title = path.split("/").pop();
         const li = document.createElement("li");
         li.classList.add("list-group-item", "d-flex", "align-items-center", "gap-3");
-        li.onclick = async e => await loadMusic(e, title, path);
+        li.onclick = async e => {
+            index = i;
+            await loadMusic(e, title, path);
+        };
 
         if (title === loadedAudio) {
             li.classList.add("active");
@@ -47,14 +54,37 @@ async function loadMusicDirectory() {
         `;
 
         playlist.append(li);
-        audioFeed.push({ title, li });
-    });
+        audioFeed.push({ title, path, li });
+    }
+    // directoryResponse.audioPaths.forEach(path => {
+    //     const title = path.split("/").pop();
+    //     const li = document.createElement("li");
+    //     li.classList.add("list-group-item", "d-flex", "align-items-center", "gap-3");
+    //     li.onclick = async e => {
+    //         index = i;
+    //         await loadMusic(e, title, path);
+    //     };
+
+    //     if (title === loadedAudio) {
+    //         li.classList.add("active");
+    //     }
+
+    //     li.innerHTML = `
+    //         <img src="https://cdn-icons-png.flaticon.com/512/109/109190.png" alt="title" height="50" width="50" />
+    //         <strong>${title}</strong>
+    //     `;
+
+    //     playlist.append(li);
+    //     audioFeed.push({ title, path, li });
+    //     i++;
+    // });
 }
 
 /**
- * Loads the audio source into the player.
+ * Loads the audio source into the player via clicking on entry.
  */
 async function loadMusic(e, title, path) {
+    console.debug("Current index:", index);
     if (activeElement === e.currentTarget) {
         return;
     }
@@ -185,3 +215,22 @@ function search(e) {
  */
 downloadForm.onsubmit = addDownloadToQueue;
 checkForYtDlp().catch(console.error);
+audio.onended = async () => {
+    console.debug("Removing active from current...");
+    audioFeed[index].li.classList.remove("active");
+
+    index++;
+    if (index === audioFeed.length) {
+        index = 0;
+    }
+
+    const feed = audioFeed[index];
+    console.debug(feed);
+    feed.li.classList.add("active");
+    activeElement = feed.li;
+
+    audioTitleLabel.innerText = feed.title;
+    const encoded = encodeURIComponent(feed.path);
+    audio.src = `/api/directory/file?path=${encoded}`;
+    await audio.play();
+};
