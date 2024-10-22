@@ -11,6 +11,7 @@ const downloadModal = new bootstrap.Modal("#download-modal");
 let directory;
 let loadedAudio = "";
 let activeElement;
+let audioFeed = [];
 
 const views = {
     feed: playlist,
@@ -18,12 +19,6 @@ const views = {
 };
 
 const downloadQueue = [];
-
-/**
- * Run on start.
- */
-downloadForm.onsubmit = addDownloadToQueue;
-checkForYtDlp().catch(console.error);
 
 /**
  * Gets the list of audio files from the $HOME/Music directory.
@@ -34,6 +29,7 @@ async function loadMusicDirectory() {
 
     directory = directoryResponse.directory;
     playlist.innerHTML = "";
+    audioFeed = [];
 
     directoryResponse.audioPaths.forEach(path => {
         const title = path.split("/").pop();
@@ -51,6 +47,7 @@ async function loadMusicDirectory() {
         `;
 
         playlist.append(li);
+        audioFeed.push({ title, li });
     });
 }
 
@@ -132,7 +129,7 @@ async function downloadAudio(url, li) {
     }
 
     status.classList.replace("text-danger", "text-warning-emphasis");
-status.innerText = "Downloading";
+    status.innerText = "Downloading";
 
     const progressBar = li.querySelector(".progress-bar");
     progressBar.style.width = "100%";
@@ -165,3 +162,26 @@ async function checkForYtDlp() {
         document.getElementById("add-download-btn").disabled = false;
     }
 }
+
+function displayTracks(list) {
+    playlist.innerHTML = "";
+    list.forEach(e => playlist.append(e.li));
+}
+
+function search(e) {
+    console.log(e);
+
+    if (e.value === "") {
+        displayTracks(audioFeed);
+        return;
+    }
+
+    const filteredList = audioFeed.filter(feed => feed.title.toLowerCase().includes(e.value.toLowerCase()));
+    displayTracks(filteredList);
+}
+
+/**
+ * Run on start.
+ */
+downloadForm.onsubmit = addDownloadToQueue;
+checkForYtDlp().catch(console.error);

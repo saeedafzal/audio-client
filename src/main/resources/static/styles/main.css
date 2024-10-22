@@ -21,6 +21,7 @@
     min-width: 0;
 
     li:hover {
+        cursor: pointer;
         color: #0d6efd;
 
         &.active {
