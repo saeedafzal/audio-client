@@ -33,6 +33,7 @@ class Dashboard(QWidget):
 
         # -- Playlist
         self.playlist = QListWidget()
+        self.downloadList = QListWidget()
 
         playlistLayout = QHBoxLayout()
         playlistLayout.addWidget(self.playlist)
@@ -104,6 +105,7 @@ class Dashboard(QWidget):
             return
 
         self.index = self.playlist.currentRow()
+        self.window().setWindowTitle(f"Audio Client - {item.text()}")
         self.player.play(f"{self.path}/{item.text()}")
 
     def playNext(self):

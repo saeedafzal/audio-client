@@ -19,3 +19,8 @@ Run the main.py:
 ```bash
 python3 main.py
 ```
+
+Build executable zipapp (requires shiv - `pip3 install shiv`):
+```bash
+shiv --output-file audio-client.pyz --entry-point main:main --compressed -r requirements.txt .
+```

@@ -1,14 +1,11 @@
 import sys
-import locale
 import qdarktheme
 
 from ui.window import Window
 from PyQt6.QtWidgets import QApplication
 
 
-if __name__ == "__main__":
-    locale.setlocale(locale.LC_NUMERIC, "C")
-
+def main():
     app = QApplication(sys.argv)
     app.setStyleSheet(qdarktheme.load_stylesheet())
 
@@ -16,3 +13,7 @@ if __name__ == "__main__":
     window.show()
 
     sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()
