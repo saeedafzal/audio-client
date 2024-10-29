@@ -18,6 +18,7 @@ class Dashboard(QWidget):
         # State
         self.index = -1
         self.isSeeking = False
+        self.isUserTriggered = False
 
         # -- Top bar
         self.directoryLabel = QLabel("-")
@@ -96,6 +97,7 @@ class Dashboard(QWidget):
             self.playlist.addItem(os.path.basename(name))
 
     def playAudio(self):
+        self.isUserTriggered = True
         if self.index is self.playlist.currentRow() and self.index != -1:
             self.player.pause = not self.player.pause
             return
@@ -109,6 +111,7 @@ class Dashboard(QWidget):
         self.player.play(f"{self.path}/{item.text()}")
 
     def playNext(self):
+        self.isUserTriggered = True
         index = self.index + 1
         if index is self.playlist.count():
             index = 0
@@ -116,6 +119,7 @@ class Dashboard(QWidget):
         self.playAudio()
 
     def playPrevious(self):
+        self.isUserTriggered = True
         index = self.index - 1
         if index == -1:
             index = self.playlist.count() - 1
@@ -124,7 +128,9 @@ class Dashboard(QWidget):
 
     def onTimePos(self, name, value):
         if value is None:
-            self.playNext()
+            if not self.isUserTriggered:
+                self.playNext()
+            self.isUserTriggered = False
             return
 
         if self.player.duration is not None and not self.isSeeking:
