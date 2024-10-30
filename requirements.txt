@@ -1,3 +1,4 @@
 PyQt6==6.7.1
 python-mpv==1.0.7
 pyqtdarktheme==0.1.7
+yt-dlp==2024.10.22

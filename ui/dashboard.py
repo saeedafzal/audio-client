@@ -2,9 +2,11 @@ import os
 import locale
 import mpv
 
+from .worker import Worker
+
 from pathlib import Path
 from PyQt6.QtWidgets import *
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QThreadPool
 
 
 class Dashboard(QWidget):
@@ -19,9 +21,20 @@ class Dashboard(QWidget):
         self.index = -1
         self.isSeeking = False
         self.isUserTriggered = False
+        self.isDownloading = False
+
+        # Downloader
+        self.downloaderPool = QThreadPool()
+        print("Multithreading with maximum %d threads" % self.downloaderPool.maxThreadCount())
 
         # -- Top bar
         self.directoryLabel = QLabel("-")
+
+        addDownloadLinkBtn = QPushButton("Add Download Link")
+        addDownloadLinkBtn.clicked.connect(self.addDownloadLink)
+
+        toggleDownloadListBtn = QPushButton("Toggle Download List")
+        toggleDownloadListBtn.clicked.connect(self.toggleDownloadList)
 
         loadMusicDirectoryBtn = QPushButton("Load Music Directory")
         loadMusicDirectoryBtn.clicked.connect(self.loadMusicDirectory)
@@ -29,15 +42,20 @@ class Dashboard(QWidget):
         topBarLayout = QHBoxLayout()
         topBarLayout.addWidget(self.directoryLabel)
         topBarLayout.addStretch()
+        topBarLayout.addWidget(addDownloadLinkBtn)
+        topBarLayout.addWidget(toggleDownloadListBtn)
         topBarLayout.addWidget(loadMusicDirectoryBtn)
         # -- Top bar
 
         # -- Playlist
         self.playlist = QListWidget()
+
         self.downloadList = QListWidget()
+        self.downloadList.hide()
 
         playlistLayout = QHBoxLayout()
         playlistLayout.addWidget(self.playlist)
+        playlistLayout.addWidget(self.downloadList)
         # -- Playlist
 
         # -- Controls
@@ -57,7 +75,8 @@ class Dashboard(QWidget):
 
         self.seeker = QSlider(Qt.Orientation.Horizontal)
         self.seeker.setEnabled(False)
-        self.seeker.sliderPressed.connect(lambda: setattr(self, "isSeeking", True))
+        self.seeker.sliderPressed.connect(
+            lambda: setattr(self, "isSeeking", True))
         self.seeker.sliderReleased.connect(self.seek)
         self.seeker.sliderMoved.connect(self.updateDurationOnSeek)
 
@@ -134,7 +153,9 @@ class Dashboard(QWidget):
             return
 
         if self.player.duration is not None and not self.isSeeking:
-            self.duration.setText(f"{self.formatTime(value)} - {self.formatTime(self.player.duration)}")
+            v = self.formatTime(value)
+            d = self.formatTime(self.player.duration)
+            self.duration.setText(f"{v} - {d}")
             self.seeker.setValue(int(value))
 
     def formatTime(self, seconds):
@@ -157,4 +178,49 @@ class Dashboard(QWidget):
         self.isSeeking = False
 
     def updateDurationOnSeek(self, position):
-        self.duration.setText(f"{self.formatTime(position)} - {self.formatTime(self.player.duration)}")
+        p = self.formatTime(position)
+        d = self.formatTime(self.player.duration)
+        self.duration.setText(f"{p} - {d}")
+
+    def toggleDownloadList(self):
+        if self.downloadList.isHidden():
+            self.downloadList.show()
+        else:
+            self.downloadList.hide()
+
+    def addDownloadLink(self):
+        if not hasattr(self, "path"):
+            return
+
+        url, ok = QInputDialog.getText(self, "Add Download Link", "Enter link supported by yt-dlp:")
+        if ok and url:
+            # TODO: Validate URL
+            self.downloadList.show()
+            self.downloadList.addItem(f"Queued: {url}")
+
+            if not self.isDownloading:
+                self.download(url)
+
+    def download(self, url):
+        self.isDownloading = True
+
+        item = self.downloadList.item(0)
+        text = item.text().replace("Queued", "Downloading")
+        item.setText(text)
+
+        print(f"Downloading: {url}")
+
+        worker = Worker(url, self.path)
+        worker.signals.finished.connect(self.downloadComplete)
+
+        self.downloaderPool.start(worker)
+
+    def downloadComplete(self):
+        print("Download completed.")
+        self.downloadList.takeItem(0)
+        if self.downloadList.count() > 0:
+            url = self.downloadList.item(0).text().split(":", 1)[1].strip()
+            print("Downloading next item in list.")
+            self.download(url)
+        else:
+            self.isDownloading = False
