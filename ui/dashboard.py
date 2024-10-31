@@ -7,6 +7,7 @@ from .worker import Worker
 from pathlib import Path
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt, QThreadPool
+from mpv import MpvEventEndFile
 
 
 class Dashboard(QWidget):
@@ -20,7 +21,6 @@ class Dashboard(QWidget):
         # State
         self.index = -1
         self.isSeeking = False
-        self.isUserTriggered = False
         self.isDownloading = False
 
         # Downloader
@@ -100,6 +100,7 @@ class Dashboard(QWidget):
         # -- Events
         self.player.observe_property("time-pos", self.onTimePos)
         self.player.observe_property("duration", self.onDuration)
+        self.player.event_callback("end-file")(self.onEndFile)
         # -- Events
 
     def loadMusicDirectory(self):
@@ -116,7 +117,6 @@ class Dashboard(QWidget):
             self.playlist.addItem(os.path.basename(name))
 
     def playAudio(self):
-        self.isUserTriggered = True
         if self.index is self.playlist.currentRow() and self.index != -1:
             self.player.pause = not self.player.pause
             return
@@ -130,7 +130,6 @@ class Dashboard(QWidget):
         self.player.play(f"{self.path}/{item.text()}")
 
     def playNext(self):
-        self.isUserTriggered = True
         index = self.index + 1
         if index is self.playlist.count():
             index = 0
@@ -138,7 +137,6 @@ class Dashboard(QWidget):
         self.playAudio()
 
     def playPrevious(self):
-        self.isUserTriggered = True
         index = self.index - 1
         if index == -1:
             index = self.playlist.count() - 1
@@ -146,13 +144,7 @@ class Dashboard(QWidget):
         self.playAudio()
 
     def onTimePos(self, name, value):
-        if value is None:
-            if not self.isUserTriggered:
-                self.playNext()
-            self.isUserTriggered = False
-            return
-
-        if self.player.duration is not None and not self.isSeeking:
+        if value is not None and self.player.duration is not None and not self.isSeeking:
             v = self.formatTime(value)
             d = self.formatTime(self.player.duration)
             self.duration.setText(f"{v} - {d}")
@@ -224,3 +216,7 @@ class Dashboard(QWidget):
             self.download(url)
         else:
             self.isDownloading = False
+
+    def onEndFile(self, event):
+        if event.data.reason is MpvEventEndFile.EOF:
+            self.playNext()
