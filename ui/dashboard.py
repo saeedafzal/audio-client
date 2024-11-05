@@ -75,8 +75,7 @@ class Dashboard(QWidget):
 
         self.seeker = QSlider(Qt.Orientation.Horizontal)
         self.seeker.setEnabled(False)
-        self.seeker.sliderPressed.connect(
-            lambda: setattr(self, "isSeeking", True))
+        self.seeker.sliderPressed.connect(lambda: setattr(self, "isSeeking", True))
         self.seeker.sliderReleased.connect(self.seek)
         self.seeker.sliderMoved.connect(self.updateDurationOnSeek)
 
@@ -220,3 +219,11 @@ class Dashboard(QWidget):
     def onEndFile(self, event):
         if event.data.reason is MpvEventEndFile.EOF:
             self.playNext()
+            return
+
+    def reset(self):
+        self.player.stop()
+        self.window().setWindowTitle(f"Audio Client")
+        self.duration.setText(f"0:00 - 0:00")
+        self.seeker.setRange(0, 0)
+        self.playlist.clearSelection()
